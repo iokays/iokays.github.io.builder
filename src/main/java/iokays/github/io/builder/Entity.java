@@ -1,9 +1,9 @@
 package iokays.github.io.builder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -38,9 +38,7 @@ public class Entity  implements Serializable {
 
 	public Entity(final String name) throws IOException, URISyntaxException {
 		this.name = name;
-		
-		final URL url = this.getClass().getClassLoader().getResource(name + ".md");
-		final byte[] temp = Files.readAllBytes(Paths.get(url.toURI()));
+		final byte[] temp = Files.readAllBytes(Paths.get(IokayPath.IN + File.separator + name + ".md"));
 		final String md = temp != null ? new String(temp, "utf-8") : "";
 		content = new PegDownProcessor().markdownToHtml(md);
 		keywords = Lists.newArrayList();
@@ -73,8 +71,8 @@ public class Entity  implements Serializable {
 		title = keywords.isEmpty() ? "" : keywords.get(0);	//标题
 		
 		content = content.replaceAll("<h2>", "<h2 class=\"ui dividing header\" >");
-		content = content.replaceAll("<h3>", "<h3 class=\"ui dividing header\" >");
-		content = content.replaceAll("<h4>", "<h4 class=\"ui dividing header\" >");
+		content = content.replaceAll("<h3>", "<h3 class=\"ui header\" >");
+		content = content.replaceAll("<h4>", "<h4 class=\"ui header\" >");
 		
 	}
 
@@ -92,6 +90,11 @@ public class Entity  implements Serializable {
 
 	public List<String> getKeywords() {
 		return keywords;
+	}
+
+	@Override
+	public String toString() {
+		return "Entity [name=" + name + ", title=" + title + ", content=" + content + ", keywords=" + keywords + "]";
 	}
 
 }
