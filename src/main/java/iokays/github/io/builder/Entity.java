@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.pegdown.PegDownProcessor;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -18,7 +20,6 @@ public class Entity  implements Serializable {
 	
 	private static final Map<String, String> H = Maps.newLinkedHashMap();
 	{
-		H.put("<h>", "</h>");
 		H.put("<h1>", "</h1>");
 		H.put("<h2>", "</h2>");
 		H.put("<h3>", "</h3>");
@@ -31,17 +32,22 @@ public class Entity  implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private final String name;
 	private final String title;
+	private final String subTitle;
+	private final String name;
+	
 	private String content;
 	private final List<String> keywords;
 
 	public Entity(final String name) throws IOException, URISyntaxException {
 		this.name = name;
-		final byte[] temp = Files.readAllBytes(Paths.get(IokayPath.IN + File.separator + name + ".md"));
-		final String md = temp != null ? new String(temp, "utf-8") : "";
-		content = new PegDownProcessor().markdownToHtml(md);
-		keywords = Lists.newArrayList();
+		final List<String> temp = Files.readAllLines(Paths.get(IokayPath.IN + File.separator + name + ".md"), Charsets.UTF_8);
+		//取第一行标题
+		title = temp.get(0).substring(temp.get(0).indexOf("<!--") + 4, temp.get(0).indexOf("-->")).trim();
+		subTitle = temp.get(1).substring(temp.get(1).indexOf("<!--") + 4, temp.get(1).indexOf("-->")).trim();
+		
+		content = new PegDownProcessor().markdownToHtml(Joiner.on("\n").join(temp));
+		keywords = Lists.newArrayList(title);
 		
 		//提取关键字
 		for (String key : H.keySet()) {
@@ -55,7 +61,8 @@ public class Entity  implements Serializable {
 					final int endIndex = str.indexOf(H.get(key));
 					if (endIndex != -1) {
 						final String keyword = str.substring(beginIndex + key.length(), endIndex).trim();
-						if (null != keyword && keyword.length() != 0) {
+						if (null != keyword && keyword.length() != 0 
+								&& (key.equals("<h>") || key.equals("<h1>") || key.equals("<h2>") || key.equals("<h3>") || key.equals("<h4>"))) {
 							keywords.add(keyword);
 						}
 						str = str.substring(endIndex + H.get(key).length());
@@ -68,11 +75,9 @@ public class Entity  implements Serializable {
 			}
 		}
 		
-		title = keywords.isEmpty() ? "" : keywords.get(0);	//标题
-		
 		content = content.replaceAll("<h2>", "<h2 class=\"ui dividing header\" >");
-		content = content.replaceAll("<h3>", "<h3 class=\"ui header\" >");
-		content = content.replaceAll("<h4>", "<h4 class=\"ui header\" >");
+		content = content.replaceAll("<h3>", "<h3 class=\"ui dividing header\" >");
+		content = content.replaceAll("<h4>", "<h4 class=\"ui dividing header\" >");
 		
 	}
 
@@ -82,6 +87,10 @@ public class Entity  implements Serializable {
 
 	public String getTitle() {
 		return title;
+	}
+
+	public String getSubTitle() {
+		return subTitle;
 	}
 
 	public String getContent() {
