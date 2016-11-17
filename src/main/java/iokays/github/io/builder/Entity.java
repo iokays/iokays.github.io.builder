@@ -75,6 +75,8 @@ public class Entity  implements Serializable {
 			}
 		}
 		
+		content = content.replaceAll("<pre><code>", "<div class=\"ignored code\" data-type=\"bash\">");
+		content = content.replaceAll("</code></pre>", "</div>");
 		content = content.replaceAll("<h2>", "<h2 class=\"ui dividing header\" >");
 		content = content.replaceAll("<h3>", "<h3 class=\"ui dividing header\" >");
 		content = content.replaceAll("<h4>", "<h4 class=\"ui dividing header\" >");
