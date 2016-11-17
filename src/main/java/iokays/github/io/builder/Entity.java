@@ -62,7 +62,7 @@ public class Entity  implements Serializable {
 					if (endIndex != -1) {
 						final String keyword = str.substring(beginIndex + key.length(), endIndex).trim();
 						if (null != keyword && keyword.length() != 0 
-								&& (key.equals("<h>") || key.equals("<h1>") || key.equals("<h2>") || key.equals("<h3>") || key.equals("<h4>"))) {
+								&& (key.equals("<h>") || key.equals("<h1>") || key.equals("<h2>") || key.equals("<h3>"))) {
 							keywords.add(keyword);
 						}
 						str = str.substring(endIndex + H.get(key).length());
