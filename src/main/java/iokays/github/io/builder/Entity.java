@@ -38,6 +38,7 @@ public class Entity  implements Serializable {
 	
 	private String content;
 	private final List<String> keywords;
+	private final List<String> descriptions;
 
 	public Entity(final String name) throws IOException, URISyntaxException {
 		this.name = name;
@@ -48,6 +49,7 @@ public class Entity  implements Serializable {
 		
 		content = new PegDownProcessor().markdownToHtml(Joiner.on("\n").join(temp));
 		keywords = Lists.newArrayList(title);
+		descriptions = Lists.newArrayList(title);
 		
 		//提取关键字
 		for (String key : H.keySet()) {
@@ -63,7 +65,10 @@ public class Entity  implements Serializable {
 						final String keyword = str.substring(beginIndex + key.length(), endIndex).trim();
 						if (null != keyword && keyword.length() != 0 
 								&& (key.equals("<h>") || key.equals("<h1>") || key.equals("<h2>") || key.equals("<h3>"))) {
-							keywords.add(keyword);
+							if (key.equals("<h1>") || key.equals("<h2>")) {
+								keywords.add(keyword);
+							}
+							descriptions.add(keyword);
 						}
 						str = str.substring(endIndex + H.get(key).length());
 					} else {
@@ -101,6 +106,10 @@ public class Entity  implements Serializable {
 
 	public List<String> getKeywords() {
 		return keywords;
+	}
+
+	public List<String> getDescriptions() {
+		return descriptions;
 	}
 
 	@Override
