@@ -52,7 +52,7 @@ public class PageProcessor {
 
 		for (String key : catalog.keySet()) {
 			for (Entity entity : catalog.get(key)) {
-				System.out.println(entity);
+				System.out.println(entity.getName());
 				final Map<String, Object> value = Maps.newHashMap();
 				value.put("name", name);
 				value.put("sign", sign);
