@@ -2,7 +2,6 @@ package iokays.github.io.builder;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.net.URISyntaxException;
@@ -24,7 +23,7 @@ import freemarker.template.TemplateException;
 
 public class PageProcessor {
 
-	private static final String name = "彭元彬";
+	private static final String name = "彭元彬。";
 	private static final String sign = "I'm not the Commonwealth.";
 
 	public static void main(String[] args) throws IOException, URISyntaxException, TemplateException {
@@ -49,23 +48,34 @@ public class PageProcessor {
 			}
 			catalog.put(key, entities);
 		}
-
+		
+		OutputStreamWriter out = null;
 		for (String key : catalog.keySet()) {
 			for (Entity entity : catalog.get(key)) {
-				System.out.println(entity.getName());
 				final Map<String, Object> value = Maps.newHashMap();
 				value.put("name", name);
 				value.put("sign", sign);
 				value.put("catalog", catalog);
 				value.put("entity", entity);
 				
-				final OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(IokayPath.OUT + File.separator + entity.getName() + ".html"),"UTF-8"); 
+				out = new OutputStreamWriter(new FileOutputStream(IokayPath.OUT + File.separator + entity.getName() + ".html"),"UTF-8"); 
 				template.process(value, out);
 				out.flush(); 
-	            out.close(); 
+	            out.close();
+	            System.out.println(entity.getName());
+	            
+	            //首页生成
+	            if (entity.getName().equals("algorithms")) {
+	            	final Template indexTemplate = cfg.getTemplate("index.ftl", "utf-8");
+	            	out = new OutputStreamWriter(new FileOutputStream(IokayPath.OUT + File.separator + "index.html"),"UTF-8"); 
+	            	indexTemplate.process(value, out);
+	        		out.flush(); 
+	                out.close();
+	                System.out.println("index");
+	            }
 			}
 		}
 		
-		//首页生成
+		
 	}
 }
